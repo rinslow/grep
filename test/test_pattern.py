@@ -28,7 +28,8 @@ HALLOW""",
         Pattern("e", ignore_case=True),
     )
 
-    assert tuple(matches) == ("Hello", "HELLO",)
+    assert tuple(matches) == ("Hello", "HELLO")
+
 
 def test_words_only():
     matches = Matches(
@@ -41,7 +42,8 @@ effo
         Pattern("e..o", words_only=True),
     )
 
-    assert tuple(matches) == ("effo", )
+    assert tuple(matches) == ("effo",)
+
 
 def test_invert_match():
     matches = Matches(
@@ -53,4 +55,4 @@ HALLOW""",
         Pattern("e", invert_match=True),
     )
 
-    assert tuple(matches) == ("HOW LOW", "HALLOW",)
+    assert tuple(matches) == ("HOW LOW", "HALLOW")

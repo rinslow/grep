@@ -70,17 +70,17 @@ class Matches(object):
         context: Context,
         pattern: Union[Pattern, str],
         only_matched=False,
-        highlight: bool = False,
         number_lines: bool = False,
         zero_based: bool = False,
+        color: str = None,
     ):
         self.text = text
         self.pattern = pattern
         self.context = context
         self.only_matched = only_matched
-        self.highlight = highlight
         self.number_lines = number_lines
         self.zero_based = zero_based
+        self.color = color
 
     def __iter__(self):
         matching_line_indices = set(self.matching_lines())
@@ -89,8 +89,11 @@ class Matches(object):
                 yield Match(
                     line,
                     index,
+                    pattern=self.pattern,
                     number_lines=self.number_lines,
                     zero_based=self.zero_based,
+                    only_matched=self.only_matched,
+                    color=self.color,
                 )
 
     def matching_lines(self):
@@ -111,20 +114,38 @@ class Matches(object):
 
 class Match(object):
 
-    def __init__(self, text, index: int, number_lines: bool, zero_based=False):
+    def __init__(
+        self,
+        text,
+        index: int,
+        number_lines: bool,
+        pattern: Union[Pattern, str],
+        zero_based: bool = False,
+        only_matched: bool = False,
+        color: str = None,
+    ):
         self.text = text
         self.index = index
         self.number_lines = number_lines
         self.zero_based = zero_based
+        self.pattern = pattern
+        self.only_matched = only_matched
+        self.color = color
 
     def __str__(self):
+        match = re.search(str(self.pattern), self.text)
+        text = self.text if not self.only_matched else match.group()
+
+        if self.color:
+            text = color_str(text, self.color)
+
         if not self.zero_based:
             self.index += 1
 
         if self.number_lines:
-            return "%d: %s" % (self.index, self.text)
+            return "%d: %s" % (self.index, text)
 
-        return self.text
+        return text
 
     def __repr__(self):
         return str(self)
@@ -144,20 +165,20 @@ class grep(object):
         context=None,
         ignore_case=False,
         invert_match=False,
-        highlight=True,
         words_only=False,
         number_lines=False,
         separate_matches=False,
         only_matched=False,
-        zero_based=False
+        zero_based=False,
+        color: str = None,
     ):
         self.context = Context(after=after, before=before, context=context)
         self.pattern = Pattern(pattern, invert_match, ignore_case, words_only)
-        self.highlight = highlight
         self.number_lines = number_lines
         self.separate_matches = separate_matches
         self.only_matched = only_matched
         self.zero_based = zero_based
+        self.color = color
 
     def __ror__(self, haystack: str):
         matches = Matches(
@@ -165,9 +186,9 @@ class grep(object):
             self.context,
             self.pattern,
             self.only_matched,
-            self.highlight,
             self.number_lines,
             self.zero_based,
+            self.color,
         )
         for match in matches:
             return str(match)

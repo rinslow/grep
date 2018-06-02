@@ -1,4 +1,5 @@
 from grep import Matches, Context
+from lazyme.string import color_str
 
 
 def test_sanity():
@@ -88,3 +89,18 @@ def test_context():
     )
 
     assert set(matches.matching_lines()) == {0, 1, 2, 3, 4, 5, 6}
+
+
+def test_zero_based():
+    matches = Matches("A", Context(), "A", zero_based=True, number_lines=True)
+    assert tuple(matches) == ("0: A",)
+
+
+def test_only_matched():
+    matches = Matches("ABCDE", Context(), "B.D", only_matched=True)
+    assert tuple(matches) == ("BCD",)
+
+
+def test_color():
+    matches = Matches("ABCDE", Context(), "B.D", color="red")
+    assert tuple(matches) == (color_str("ABCDE", "red"),)
