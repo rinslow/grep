@@ -5,6 +5,9 @@ from typing import Union
 from lazyme.string import color_str
 
 
+MATCHES_SEPARATOR = "\n--\n"
+
+
 class Context(object):
 
     def __init__(self, context=None, before=None, after=None):
@@ -136,7 +139,7 @@ class Match(object):
         match = re.search(str(self.pattern), self.text)
         text = self.text if not self.only_matched else match.group()
 
-        if self.color:
+        if self.color and match:
             text = color_str(text, self.color)
 
         if not self.zero_based:
@@ -154,6 +157,18 @@ class Match(object):
         return str(self) == other
 
 
+class Result(object):
+
+    def __init__(self, matches: Matches):
+        self.matches = matches
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "\n".join(map(str, iter(self.matches)))
+
+
 class grep(object):
 
     def __init__(
@@ -167,7 +182,6 @@ class grep(object):
         invert_match=False,
         words_only=False,
         number_lines=False,
-        separate_matches=False,
         only_matched=False,
         zero_based=False,
         color: str = None,
@@ -175,7 +189,6 @@ class grep(object):
         self.context = Context(after=after, before=before, context=context)
         self.pattern = Pattern(pattern, invert_match, ignore_case, words_only)
         self.number_lines = number_lines
-        self.separate_matches = separate_matches
         self.only_matched = only_matched
         self.zero_based = zero_based
         self.color = color
@@ -190,5 +203,5 @@ class grep(object):
             self.zero_based,
             self.color,
         )
-        for match in matches:
-            return str(match)
+
+        return Result(matches)

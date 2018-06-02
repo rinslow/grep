@@ -104,3 +104,14 @@ def test_only_matched():
 def test_color():
     matches = Matches("ABCDE", Context(), "B.D", color="red")
     assert tuple(matches) == (color_str("ABCDE", "red"),)
+
+
+def test_context_is_not_colored():
+    matches = Matches(
+        """ABCDE
+MEOW""",
+        Context(after=1),
+        "B.D",
+        color="red",
+    )
+    assert tuple(matches) == (color_str("ABCDE", "red"), "MEOW")
