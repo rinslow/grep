@@ -1,4 +1,3 @@
-import os
 import re
 from typing import Union
 
@@ -35,7 +34,7 @@ class Context(object):
 
 
 class Pattern(object):
-
+    """Pattern object returns a regex pattern through it's __str__ method."""
     def __init__(
         self,
         needle,
