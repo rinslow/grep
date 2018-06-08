@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name="grep",
     packages=["grep"],
-    version="0.3.1",
+    version="0.3.2",
     description="String lookup has never been prettier.",
     author="Dan Elkis",
     author_email="elkissdan@gmail.com",

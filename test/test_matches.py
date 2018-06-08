@@ -91,6 +91,21 @@ def test_context():
     assert set(matches.matching_lines()) == {0, 1, 2, 3, 4, 5, 6}
 
 
+def test_context_supplied_as_an_int():
+    matches = Matches(
+        """A
+    B
+    C
+    D
+    A
+    B
+    C
+    D""", context=2, pattern="A", number_lines=True,
+    )
+
+    assert set(matches.matching_lines()) == {0, 1, 2, 3, 4, 5, 6}
+
+
 def test_zero_based():
     matches = Matches("A", Context(), "A", zero_based=True, number_lines=True)
     assert tuple(matches) == ("0: A",)
@@ -99,6 +114,12 @@ def test_zero_based():
 def test_only_matched():
     matches = Matches("ABCDE", Context(), "B.D", only_matched=True)
     assert tuple(matches) == ("BCD",)
+
+
+def test_only_matched_with_context():
+    matches = Matches("""ABCDE
+FFF""", Context(context=1), "B.D", only_matched=True)
+    assert tuple(matches) == ("BCD", "")
 
 
 def test_color():

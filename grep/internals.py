@@ -69,13 +69,16 @@ class Matches(object):
     def __init__(
         self,
         text: str,
-        context: Context,
+        context: Union[Context, int],
         pattern: Union[Pattern, str],
         only_matched=False,
         number_lines: bool = False,
         zero_based: bool = False,
         color: str = None,
     ):
+        if isinstance(context, int):
+            context = Context(context=context)
+
         self.text = text
         self.pattern = pattern
         self.context = context
@@ -136,7 +139,15 @@ class Match(object):
 
     def __str__(self):
         match = re.search(str(self.pattern), self.text)
-        text = self.text if not self.only_matched else match.group()
+        if self.only_matched:
+            if match:
+                text = match.group()
+
+            else:
+                return ""
+
+        else:
+            text = self.text
 
         if self.color and match:
             text = color_str(text, self.color)
@@ -165,7 +176,7 @@ class Result(object):
         return repr(self)
 
     def __repr__(self):
-        return "\n".join(map(str, iter(self.matches)))
+        return "\n".join(map(str, filter(None, self.matches)))
 
 
 class grep(object):
@@ -183,7 +194,7 @@ class grep(object):
         number_lines=False,
         only_matched=False,
         zero_based=False,
-        color: str = None,
+        color: str = None
     ):
         self.context = Context(after=after, before=before, context=context)
         self.pattern = Pattern(pattern, invert_match, ignore_case, words_only)
