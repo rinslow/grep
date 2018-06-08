@@ -1,4 +1,4 @@
-from grep import Matches, Context
+from grep.internals import Matches, Context
 from lazyme.string import color_str
 
 

@@ -1,4 +1,4 @@
-from grep import Matches, Context, Pattern
+from grep.internals import Matches, Context, Pattern
 
 
 def test_sanity():
